@@ -14,7 +14,6 @@ import { getDataDump } from './getDataDump';
 import { compressFile } from './compressFile';
 import { DB } from './DB';
 import { ERRORS } from './Errors';
-import { HEADER_VARIABLES, FOOTER_VARIABLES } from './sessionVariables';
 
 const defaultOptions: Options = {
     connection: {
@@ -112,11 +111,6 @@ export default async function main(inputOptions: Options): Promise<DumpReturn> {
             fs.writeFileSync(options.dumpToFile, '');
         }
 
-        // write the initial headers
-        if (options.dumpToFile) {
-            fs.appendFileSync(options.dumpToFile, `${HEADER_VARIABLES}\n`);
-        }
-
         connection = await DB.connect(
             merge([options.connection, { multipleStatements: true }]),
         );
@@ -195,11 +189,6 @@ export default async function main(inputOptions: Options): Promise<DumpReturn> {
         // write the triggers to the file
         if (options.dumpToFile && res.dump.trigger) {
             fs.appendFileSync(options.dumpToFile, `${res.dump.trigger}\n\n`);
-        }
-
-        // reset all of the variables
-        if (options.dumpToFile) {
-            fs.appendFileSync(options.dumpToFile, FOOTER_VARIABLES);
         }
 
         // compress output file
